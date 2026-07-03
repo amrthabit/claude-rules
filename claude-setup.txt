@@ -1,0 +1,43 @@
+==============================================================================
+claude-setup.txt                                    one-time install bootstrap
+==============================================================================
+
+Run this once on a fresh box, then the agent runs off claude-running.txt every
+session after. Plain text, 80 columns, readable in any browser.
+
+Point a new install here. It does the setup steps, wires CLAUDE.md to import
+the running rules, then gets out of the way.
+
+
+STEPS
+------------------------------------------------------------------------------
+1. Clone or fetch this rules repo somewhere stable, e.g. ~/.claude-rules.
+
+2. Set the git commit identity (owner only, no co-author):
+      git config --global user.name  "YOUR NAME"
+      git config --global user.email "you@example.com"
+
+3. Point the agent at the running rules. In the project (or global) CLAUDE.md,
+   add one line:
+      @~/.claude-rules/claude-running.txt
+   For cross-tool reach, an AGENTS.md with the same import works for agents
+   that read AGENTS.md instead.
+
+4. Confirm the agent loaded them: ask it to state the core rules back. It
+   should lead with "no co-author" and "update skills as you work".
+
+5. Done. This setup file is not loaded per session; only claude-running.txt is.
+
+
+NOTES
+------------------------------------------------------------------------------
+- A bare .txt at a URL is NOT auto-fetched by the agent. It loads CLAUDE.md /
+  AGENTS.md and follows local @imports. So keep a local clone and import that,
+  or paste the running rules in directly.
+- Keep claude-running.txt small and stable. Churn belongs in project files,
+  not here.
+
+
+==============================================================================
+end.
+==============================================================================
