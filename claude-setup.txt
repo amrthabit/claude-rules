@@ -12,28 +12,47 @@ the running rules, then gets out of the way.
 STEPS
 ------------------------------------------------------------------------------
 1. Clone or fetch this rules repo somewhere stable, e.g. ~/.claude-rules.
+   You now have verify-rules.sh, trusted-hashes.txt, and the two .txt files
+   locally.
 
 2. Set the git commit identity (owner only, no co-author):
       git config --global user.name  "YOUR NAME"
       git config --global user.email "you@example.com"
 
-3. Point the agent at the running rules. In the project (or global) CLAUDE.md,
-   add one line:
+3. Pin the trust anchor (do this ONCE, carefully). Look at the current hash:
+      sha256sum ~/.claude-rules/claude-running.txt
+   Confirm it out of band - compare against the value in trusted-hashes.txt
+   and, ideally, a copy you got by a different path. When satisfied, that hash
+   is your anchor. Keep trusted-hashes.txt local; do not re-fetch it blindly.
+
+4. Verify-and-install the running rules through the gate:
+      PIN_FILE=~/.claude-rules/trusted-hashes.txt \
+      sh ~/.claude-rules/verify-rules.sh
+   It fetches the remote running file, checks its SHA-256 against your pin,
+   and installs it to ~/.claude-rules/claude-running.txt only on a match.
+   On any mismatch it REFUSES and you must not load the rules.
+
+5. Point the agent at the LOCAL, verified copy. In the project (or global)
+   CLAUDE.md add one line:
       @~/.claude-rules/claude-running.txt
    For cross-tool reach, an AGENTS.md with the same import works for agents
-   that read AGENTS.md instead.
+   that read AGENTS.md instead. Never import the remote URL directly.
 
-4. Confirm the agent loaded them: ask it to state the core rules back. It
-   should lead with "no co-author" and "update skills as you work".
+6. Confirm: ask the agent to state the core rules back. It should lead with
+   "no co-author" and "update skills as you work".
 
-5. Done. This setup file is not loaded per session; only claude-running.txt is.
+7. To update later: pin the new hash (step 3), then re-run the gate (step 4).
+   Sessions keep loading the last verified local copy until then.
 
 
 NOTES
 ------------------------------------------------------------------------------
 - A bare .txt at a URL is NOT auto-fetched by the agent. It loads CLAUDE.md /
-  AGENTS.md and follows local @imports. So keep a local clone and import that,
-  or paste the running rules in directly.
+  AGENTS.md and follows local @imports. So sessions import the local verified
+  copy; verify-rules.sh is the only thing that refreshes it.
+- Why this is safe: a hijacked remote (DNS, MITM, tampered repo) fails the
+  hash check and is refused. It can never silently replace your rules. The one
+  window you own is the first pin (trust-on-first-use) - do step 3 carefully.
 - Keep claude-running.txt small and stable. Churn belongs in project files,
   not here.
 

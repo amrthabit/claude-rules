@@ -1,0 +1,14 @@
+# trusted-hashes.txt  -  SHA-256 allowlist for claude-running.txt
+#
+# One approved version per line:  <sha256>  <note>
+# verify-rules.sh installs the fetched running file ONLY if its hash matches a
+# line here. Blank lines and lines starting with # are ignored.
+#
+# TRUST ANCHOR: this list is meant to live LOCALLY (pinned at setup). Do not
+# trust a copy of it fetched over the same channel as the rules. Add a hash
+# only after you have confirmed it out of band (read it back yourself, compare
+# against what you recorded, or regenerate from a file you reviewed).
+#
+# Regenerate a hash locally:  sha256sum claude-running.txt
+#
+b0cc660a72dd6ebf0930756a3b2c396041265d19d425300c63eea23dc6899af1  v1-20260703
